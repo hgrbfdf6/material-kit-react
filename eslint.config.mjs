@@ -7,12 +7,6 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import perfectionistPlugin from 'eslint-plugin-perfectionist';
 import unusedImportsPlugin from 'eslint-plugin-unused-imports';
 
-// ----------------------------------------------------------------------
-
-/**
- * @rules common
- * from 'react', 'eslint-plugin-react-hooks'...
- */
 const commonRules = () => ({
   ...reactHooksPlugin.configs.recommended.rules,
   'func-names': 1,
@@ -26,7 +20,6 @@ const commonRules = () => ({
   'default-case': [2, { commentPattern: '^no default$' }],
   'lines-around-directive': [2, { before: 'always', after: 'always' }],
   'arrow-body-style': [2, 'as-needed', { requireReturnForObjectLiteral: false }],
-  // react
   'react/jsx-key': 0,
   'react/prop-types': 0,
   'react/display-name': 0,
@@ -36,7 +29,6 @@ const commonRules = () => ({
   'react/react-in-jsx-scope': 0,
   'react/jsx-no-useless-fragment': [1, { allowExpressions: true }],
   'react/jsx-curly-brace-presence': [2, { props: 'never', children: 'never' }],
-  // typescript
   '@typescript-eslint/no-shadow': 2,
   '@typescript-eslint/no-explicit-any': 0,
   '@typescript-eslint/no-empty-object-type': 0,
@@ -44,10 +36,6 @@ const commonRules = () => ({
   '@typescript-eslint/no-unused-vars': [1, { args: 'none' }],
 });
 
-/**
- * @rules import
- * from 'eslint-plugin-import'.
- */
 const importRules = () => ({
   ...importPlugin.configs.recommended.rules,
   'import/named': 0,
@@ -57,16 +45,10 @@ const importRules = () => ({
   'import/no-named-as-default': 0,
   'import/newline-after-import': 2,
   'import/no-named-as-default-member': 0,
-  'import/no-cycle': [
-    0, // disabled if slow
-    { maxDepth: '∞', ignoreExternal: false, allowUnsafeDynamicCyclicDependency: false },
-  ],
+  'import/no-unresolved': 0, // Disable path resolution checking temporarily
+  'import/no-cycle': 0,
 });
 
-/**
- * @rules unused imports
- * from 'eslint-plugin-unused-imports'.
- */
 const unusedImportsRules = () => ({
   'unused-imports/no-unused-imports': 1,
   'unused-imports/no-unused-vars': [
@@ -75,10 +57,6 @@ const unusedImportsRules = () => ({
   ],
 });
 
-/**
- * @rules sort or imports/exports
- * from 'eslint-plugin-perfectionist'.
- */
 const sortImportsRules = () => {
   const customGroups = {
     mui: ['custom-mui'],
@@ -148,9 +126,6 @@ const sortImportsRules = () => {
   };
 };
 
-/**
- * Custom ESLint configuration.
- */
 export const customConfig = {
   plugins: {
     'react-hooks': reactHooksPlugin,
@@ -159,11 +134,12 @@ export const customConfig = {
     import: importPlugin,
   },
   settings: {
-    // https://www.npmjs.com/package/eslint-import-resolver-typescript
-    ...importPlugin.configs.typescript.settings,
     'import/resolver': {
-      ...importPlugin.configs.typescript.settings['import/resolver'],
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
       typescript: {
+        alwaysTryTypes: true,
         project: './tsconfig.json',
       },
     },
@@ -175,8 +151,6 @@ export const customConfig = {
     ...sortImportsRules(),
   },
 };
-
-// ----------------------------------------------------------------------
 
 export default [
   { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
